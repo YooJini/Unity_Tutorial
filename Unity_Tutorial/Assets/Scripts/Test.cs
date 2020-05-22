@@ -5,29 +5,50 @@ using UnityEngine;
 public class Test : MonoBehaviour
 {
 
-    private Rigidbody myRigid;
-    private Vector3 rotation;
+    private BoxCollider col;
+  
 
     void Start()
     {
-        myRigid = GetComponent<Rigidbody>();
-        rotation = this.transform.eulerAngles;
+        col = GetComponent<BoxCollider>();
     }
 
-    void Update()
+    // void Update()
+    // {
+    //    if(Input.GetKeyDown(KeyCode.W))
+    //     {
+    //        //속성
+    //        // Debug.Log("col.bounds"+col.bounds);
+    //        // Debug.Log("col.bounds.extents"+col.bounds.extents);
+    //        // Debug.Log("col.bounds.extents.x"+col.bounds.extents.x);
+    //        // Debug.Log("col.size"+col.size);
+    //        // Debug.Log("col.center"+col.center);
+    //
+    //        //메소드
+    //        //레이저 쏘기, 감지
+    //        if(Input.GetMouseButtonDown(0))
+    //         {
+    //             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+    //             RaycastHit hitInfo;
+    //             if(col.Raycast(ray, out hitInfo, 1000))
+    //             {
+    //                 this.transform.position = hitInfo.point;
+    //             }
+    //         }
+    //     }
+    // }
+  
+   // private void OnTriggerEnter(Collider other)
+   // {
+   //     
+   // }
+    private void OnTriggerExit(Collider other)
     {
-        if(Input.GetKey(KeyCode.W))
-        {
-            //MovePosition, MoveRotation: 관성과 질량의 영향을 받지 않음 
-            rotation += new Vector3(90, 0, 0) * Time.deltaTime;
-            myRigid.MoveRotation(Quaternion.Euler(rotation));
-
-            //AddForce, AddTorque: 관성과 질량의 영향을 받음 -> 자연스러움
-            myRigid.AddForce(Vector3.forward);
-            myRigid.AddTorque(Vector3.up);
-
-            //폭발물 구현시 유용
-            myRigid.AddExplosionForce(10, this.transform.right, 10);
-        }
+        other.transform.position = new Vector3(0,2,0);
+    }
+   //머물고 있는 동안 실행
+    private void OnTriggerStay(Collider other)
+    {
+        other.transform.position += new Vector3(0, 0, 0.01f);
     }
 }
