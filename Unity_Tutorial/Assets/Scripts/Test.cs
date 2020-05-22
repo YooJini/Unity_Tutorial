@@ -4,40 +4,30 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
-    // Vector3 rotation;
-    //
-    // void Start()
-    // {
-    //     rotation = this.transform.eulerAngles;
-    // }
-    [SerializeField]//private으로 선언한 것을 inspector에 강제로 나타나게 함
-    private GameObject go_camera;
-   
+
+    private Rigidbody myRigid;
+    private Vector3 rotation;
+
+    void Start()
+    {
+        myRigid = GetComponent<Rigidbody>();
+        rotation = this.transform.eulerAngles;
+    }
+
     void Update()
     {
-        transform.RotateAround(go_camera.transform.position, Vector3.up, 100 * Time.deltaTime);
-        
-        if (Input.GetKey(KeyCode.W))
+        if(Input.GetKey(KeyCode.W))
         {
-            //이동
-            // this.transform.position = this.transform.position + new Vector3(0, 0, 1) * Time.deltaTime;
-            // this.transform.Translate(new Vector3(0, 0, 1) * Time.deltaTime);
+            //MovePosition, MoveRotation: 관성과 질량의 영향을 받지 않음 
+            rotation += new Vector3(90, 0, 0) * Time.deltaTime;
+            myRigid.MoveRotation(Quaternion.Euler(rotation));
 
-            //회전
-            // rotation = rotation + new Vector3(90, 0, 0) * Time.deltaTime;
-            // this.transform.rotation = Quaternion.Euler(rotation);
-            //Quaternion을 사용하는 이유
-            //오일러각도에서는 한 축이 90도로 고정되면 다른 축이 고장나버리는 현상이 일어남
+            //AddForce, AddTorque: 관성과 질량의 영향을 받음 -> 자연스러움
+            myRigid.AddForce(Vector3.forward);
+            myRigid.AddTorque(Vector3.up);
 
-            //크기 조절
-            //this.transform.localScale = this.transform.localScale + new Vector3(2, 2, 2)*Time.deltaTime;
-
-            //정규화 벡터(방향만을 알려주는 녀석) new Vector(0,0,1)
-            //forward, up, right
-
-            //카메라를 바라봐라
-            //this.transform.LookAt(go_camera.transform.position);
-           
+            //폭발물 구현시 유용
+            myRigid.AddExplosionForce(10, this.transform.right, 10);
         }
     }
 }
