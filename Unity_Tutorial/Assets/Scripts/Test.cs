@@ -5,27 +5,27 @@ using UnityEngine;
 public class Test : MonoBehaviour
 {
     [SerializeField]
-    private Material red_Mat;
+    private GameObject go_Target;
+    
     [SerializeField]
-    private Material green_Mat;
+    private float speed;
+    
+    private Vector3 difValue;
 
-    private MeshRenderer mesh;
-    // Start is called before the first frame update
+    //private Camera theCam;
+
     void Start()
     {
-        mesh = GetComponent<MeshRenderer>();
+        difValue = transform.position - go_Target.transform.position;
+        difValue = new Vector3(Mathf.Abs(difValue.x), Mathf.Abs(difValue.y), Mathf.Abs(difValue.z));
+
+       
     }
 
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetMouseButton(0))
-        {
-            mesh.material = green_Mat;
-        }
-        else
-        {
-            mesh.material = red_Mat;
-        }
+       //Lerp --> 부드럽게 움직이도록 해줌 
+       this.transform.position = Vector3.Lerp(this.transform.position, go_Target.transform.position + difValue, speed);
     }
 }
