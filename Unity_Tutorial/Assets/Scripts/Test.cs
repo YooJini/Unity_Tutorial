@@ -4,38 +4,26 @@ using UnityEngine;
 
 public class Test : MonoBehaviour
 {
-    private Light the_Light;
-
-    private float targetIntensity;
-    private float currentIntensity;
-
+    private Animation anim;
 
 
     void Start()
     {
-        the_Light = GetComponent<Light>();
-        currentIntensity = the_Light.intensity;
-        targetIntensity = Random.Range(0.4f, 1f);
-       
+        anim = GetComponent<Animation>();
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Mathf.Abs(targetIntensity - currentIntensity) >= 0.01)
+      if(Input.GetKeyDown(KeyCode.W))
         {
-            if (targetIntensity - currentIntensity >= 0)
-                currentIntensity += Time.deltaTime * 3f;
-            else
-                currentIntensity -= Time.deltaTime * 3f;
+           // anim.Play("Cube_2");
+           // anim.PlayQueued("Cube_2");
+            anim.Blend("Cube_2");
+           // anim.CrossFade("Cube_2");
+           // if (!anim.IsPlaying("Cube_2")) anim.Play("Cube_2");
 
-            the_Light.intensity = currentIntensity;
-            the_Light.range = currentIntensity + 10;
 
-        }
-        else
-        {
-            targetIntensity = Random.Range(0.4f, 1f);
         }
     }
 }
