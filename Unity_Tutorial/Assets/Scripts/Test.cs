@@ -8,9 +8,7 @@ using UnityEngine.AI;
 
 public class Test : MonoBehaviour
 {
-    Rigidbody myRigid;
-    [SerializeField] private float moveSpeed;
-
+    
     NavMeshAgent agent;
 
     [SerializeField] private Transform[] tf_Destination;
@@ -20,37 +18,46 @@ public class Test : MonoBehaviour
 
     private void Start()
     {
-        myRigid = GetComponent<Rigidbody>();
+      
         agent = GetComponent<NavMeshAgent>();
-
-        wayPoints = new Vector3[tf_Destination.Length + 1];
-
-        for (int i = 0; i <tf_Destination.Length; i++)
-        
-            wayPoints[i] = tf_Destination[i].position;
-         wayPoints[wayPoints.Length - 1] = transform.position;
         
     }
     private void Update()
     {
-        Patrol();
-       // if(Input.GetKey(KeyCode.W))
-       // {
-       //     agent.SetDestination(tf_Destination.position);
-       // }
-      
-    }
+       Collider[] col = Physics.OverlapSphere(transform.position, 10f);
 
-    void Patrol()
-    {
-        for (int i = 0; i < wayPoints.Length; i++)
+        if (col.Length>0)
         {
-            if (Vector3.Distance(transform.position, wayPoints[i]) <= 0.1f)
-                agent.SetDestination(wayPoints[i + 1]);
-            else
-                agent.SetDestination(wayPoints[0]);
+            for (int i = 0; i < col.Length; i++)
+            {
+                Transform tf_Target = col[i].transform;
+
+                if(tf_Target.name=="플레이어")
+                {
+                    NavMeshPath path = new NavMeshPath();
+                    agent.CalculatePath(tf_Target.position, path);
+
+                    Vector3[] wayPoints = new Vector3[path.corners.Length + 2];
+                    wayPoints[0] = transform.position;
+                    wayPoints[wayPoints.Length - 1] = tf_Target.position;
+
+                    float _distance = 0f;
+                    for (int p = 0; p < path.corners.Length; p++)
+                    {
+                        wayPoints[p + 1] = path.corners[p];
+                        _distance = Vector3.Distance(wayPoints[p], wayPoints[p + 1]);
+                    }
+
+                    if(_distance<=10f)
+                    {
+                        agent.SetDestination(tf_Target.position);
+                    }
+                }
+            }
         }
     }
+
+    
 }
    
    
