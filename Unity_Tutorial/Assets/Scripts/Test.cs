@@ -7,22 +7,39 @@ using UnityEngine.UI;
 
 public class Test : MonoBehaviour
 {
-    [SerializeField] AudioSource theAudio;
 
-    [SerializeField] private AudioClip[] clip;
+    private float createTime = 1f;
+    private float currentCreateTime;
 
+    [SerializeField] private GameObject go_BulletPrefab;
 
-    private void Start()
+    private void Update()
     {
-        theAudio = GetComponent<AudioSource>();
-    }
+        
+        Collider[] col = Physics.OverlapSphere(transform.position, 5f);
 
-    public void PlaySE()
-    {
-        int _temp = Random.Range(0, 4);
+        if(col.Length>0)
+        {
+            for (int i = 0; i < col.Length; i++)
+            {
+                Transform tf_Target = col[i].transform;
 
-        theAudio.clip = clip[_temp];
-        theAudio.Play();
+                if(tf_Target.tag=="Player")
+                {
+                    
+                    Quaternion rotation = Quaternion.LookRotation(tf_Target.position - this.transform.position);
+                    transform.rotation = rotation;
+
+                    currentCreateTime += Time.deltaTime;
+                    if (currentCreateTime >= createTime)
+                    {
+                       GameObject _tmp = Instantiate(go_BulletPrefab, transform.position, rotation);
+                        Physics.IgnoreCollision(_tmp.GetComponent<Collider>(), tf_Target.GetComponent<Collider>());
+                        currentCreateTime = 0;
+                    }
+                }
+            }
+        }
     }
 
 }
