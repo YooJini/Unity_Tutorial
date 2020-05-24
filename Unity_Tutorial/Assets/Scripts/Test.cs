@@ -4,24 +4,61 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
 
+[System.Serializable]
+public class Dialog
+{
+    [TextArea]
+    public string dialog;
+    public Sprite cg;
+
+}
 public class Test : MonoBehaviour
 {
-    [SerializeField] private Text txt_Money;
-    [SerializeField] private InputField inputTxt_Money;
+    [SerializeField] private SpriteRenderer sprite_StandingCG;
+    [SerializeField] private SpriteRenderer sprite_DialogBox;
+    [SerializeField] private Text txt_Dialog;
 
-    private int currentMoney;
+    private bool isDialog = false;
 
-    public void Input()
+    private int count = 0;
+
+    [SerializeField] private Dialog[] dialog;
+
+    private void OnOff(bool _flag)
     {
-        currentMoney += int.Parse(inputTxt_Money.text);
-
-        txt_Money.text = currentMoney.ToString();
+        sprite_DialogBox.gameObject.SetActive(_flag);
+        sprite_StandingCG.gameObject.SetActive(_flag);
+        txt_Dialog.gameObject.SetActive(_flag);
+        isDialog = _flag;
     }
-    public void Output()
+
+    public void ShowDialog()
     {
-        currentMoney -= int.Parse(inputTxt_Money.text);
-
-        txt_Money.text = currentMoney.ToString();
+        OnOff(true);
+        count = 0;
+        NextDialog();
     }
 
+    private void NextDialog()
+    {
+        txt_Dialog.text = dialog[count].dialog;
+        sprite_StandingCG.sprite = dialog[count].cg;
+        count++;
+    }
+
+    
+
+    private void Update()
+    {
+        if(isDialog)
+        {
+            if(Input.GetKeyDown(KeyCode.Space))
+            {
+                if (count < dialog.Length)
+                    NextDialog();
+                else
+                    OnOff(false);
+            }
+        }
+    }
 }
