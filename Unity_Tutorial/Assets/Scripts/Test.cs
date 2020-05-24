@@ -6,27 +6,53 @@ using UnityEngine.EventSystems;
 
 
 
-public class Test : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler, IDropHandler
+public class Test : MonoBehaviour,IPointerDownHandler,IPointerUpHandler,IDragHandler
 {
-    public void OnBeginDrag(PointerEventData eventData)
-    {
-        Debug.Log("Begin Drag");
-    }
+    [SerializeField] private RectTransform rect_BackGround;
+    [SerializeField] private RectTransform rect_JoyStick;
 
+    private float radius;
+
+    [SerializeField] private GameObject go_Player;
+    [SerializeField] private float moveSpeed;
+
+    private bool isTouch = false;
+    private Vector3 movePosition;
+
+
+    private void Start()
+    {
+        radius = rect_BackGround.rect.width * 0.5f;
+    }
+    void Update()
+    {
+        if (isTouch) go_Player.transform.position += movePosition;
+    }
+    
     public void OnDrag(PointerEventData eventData)
     {
-        transform.position = eventData.position;
+        Vector2 value = eventData.position - (Vector2)rect_BackGround.position;
+
+        //가두기
+        value = Vector2.ClampMagnitude(value, radius);
+
+        rect_JoyStick.localPosition = value;
+
+        float distance = Vector2.Distance(rect_BackGround.position, rect_JoyStick.position)/radius;
+        value = value.normalized;
+        movePosition = new Vector3(value.x * moveSpeed * Time.deltaTime, 0f, value.y * moveSpeed * Time.deltaTime);
     }
 
-    public void OnDrop(PointerEventData eventData)
+    public void OnPointerDown(PointerEventData eventData)
     {
-        Debug.Log("Drop");
+        isTouch = true;
     }
 
-    public void OnEndDrag(PointerEventData eventData)
+    public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log("End Drag");
+        isTouch = false;
+        rect_JoyStick.localPosition = Vector3.zero;
+        movePosition = Vector3.zero;
     }
 }
-   
    
